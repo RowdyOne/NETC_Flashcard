@@ -1,0 +1,42 @@
+git add .
+
+git add index.html
+
+git add firstone
+
+git commit -m 'try'
+
+git push origin master
+	username
+	password
+
+
+
+git rm -r .
+
+
+PHONEGAP  (works on the mac)
+
+phonegap create myapp
+
+phonegap run ios
+
+phonegap run android
+
+phonegap build ios
+	-- look under "myapp" --> "platforms" --> "ios" for the .xcodeproj
+
+phonegap build android (does not work yet)
+ 	(now works - well, almost)
+
+	I have just installed Android Studio 0.2.2 and want to add the sdk tools to path which are in this folder;
+/Applications/Android\ Studio.app/sdk/tools
+
+
+
+	Use open ~/.bash_profile within the console.
+
+	Write this two lines: 
+	export PATH=/Users/username/Library/Android/sdk/tools:$PATH 
+	and 
+	export PATH=/Users/username/Library/Android/sdk/platform-tools:$PATH
