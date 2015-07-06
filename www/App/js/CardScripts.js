@@ -19,9 +19,8 @@
   var gc_Q_DeckDisplay_idx_ReadyNotShown = 0;
   var gc_Q_DeckDisplay_idx_ReadyEasy = 1;
   var gc_Q_DeckDisplay_idx_ReadyHard = 2;
-  var gc_Q_DeckDisplay_idx_Previous = 3;
-//  var gc_Q_DeckDisplay_idx_ShownEasy = 3;
-//  var gc_Q_DeckDisplay_idx_ShownHard = 4;
+  var gc_Q_DeckDisplay_idx_ShownEasy = 3;
+  var gc_Q_DeckDisplay_idx_ShownHard = 4;
   
   var gc_CardDeck_Idx_Col_CardNum = 0;
   var gc_CardDeck_Idx_Col_Picture = 1;
@@ -57,8 +56,6 @@
   var g_CardCount = 0;
   var g_Prev_Idx = -1; // a negative number means no card exists
   var g_Prev_Q = -1;  // just initializing the queue
-  var g_isShowingPrevious = false;
-
   var g_StatisticsDisplayed = false;
   var g_StatisticsHideButtons1 = '';
   var g_StatisticsHideButtons2 = '';
@@ -71,11 +68,7 @@
       isApple = (/iphone|ipad/gi).test(navigator.appVersion);
       
   var prevX, prevY; // captured when the screen is touched    
-  var g_TouchDist=0;
   
-  // to support button presses
-  var g_depressed_Begin = false;
-  var g_depressed_SkipNext = false;
 
 // ****************************************************************************
 // ****************************************************************************
@@ -139,7 +132,7 @@
      t.innerHTML = g_DeckTitle + " <br> " +  g_CourseName;
      // create the card array and the queue array
      g_CardDeckArray = Create2DArray(gc_Card_TotalElements);
-     g_CardShowQueue = Create2DArray(4); // there are 5 queues for displaying cards
+     g_CardShowQueue = Create2DArray(5); // there are 5 queues for displaying cards
      
      // initialize the queues
      Q_initAllQueuesEmpty();
@@ -466,15 +459,22 @@
      
  //    showqueuestuff();
      
-     g_CardShowQueue[gc_Q_DeckDisplay_idx_ReadyEasy][g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyEasy]] = g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx];  // this card
+     g_CardShowQueue[gc_Q_DeckDisplay_idx_ShownEasy][g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownEasy]] = g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx];  // this card
      g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx] = -1;  // empty this cell out
-     g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyEasy]++;
+     g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownEasy]++;
      g_CardShowQueueSize[g_CurrentShowQ]--; // removed one element from the current queue
+     
      
  //    showqueuestuff();
      
+     
+     // update the previous card pointers with the new location
+     g_Prev_Idx = g_CurrentShowIdx;  // store this value
+     g_Prev_Q = g_CurrentShowQ;  // and the previous queue
+     
+     
      Q_CompressAll();
-//      Q_Balance();  
+      Q_Balance();  
      
  //    showqueuestuff();
      
@@ -487,13 +487,18 @@
    {
      // gCardPrevious = -1
      
-     g_CardShowQueue[gc_Q_DeckDisplay_idx_ReadyHard][g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyHard]] = g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx];  // this card
+     g_CardShowQueue[gc_Q_DeckDisplay_idx_ShownHard][g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownHard]] = g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx];  // this card
      g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx] = -1;  // empty this cell out
-     g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyHard]++;
+     g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownHard]++;
      g_CardShowQueueSize[g_CurrentShowQ]--; // removed one element from the current queue
      
+     // update the previous card pointers with the new location
+     g_Prev_Idx = g_CurrentShowIdx;  // store this value
+     g_Prev_Q = g_CurrentShowQ;  // and the previous queue
+     
+     
      Q_CompressAll();
- //     Q_Balance();  
+      Q_Balance();  
      ShowNewCard();
    }
 
@@ -501,77 +506,23 @@
 // **************************************************************************** 
   function ShowNewCard()
    {
-//     var g_CurrentShowQ = 0;  // one of(0 1 2)
+     var queueNum = 0;  // one of(0 1 2)
      var tmp;
-     var isRecent = true;
-     var loopcnt = 0;
-     var i;
      
    if (!g_StatisticsDisplayed)
    {  
-     if (g_isShowingPrevious)
-     {
-       ShowPrevCard_next();
-     }
-     else
-     {
-      isRecent = true;
-      loopcnt=0;
-      while (isRecent && (loopcnt < 5))  // only try a few times before giving up
-      { 
-         loopcnt++;
-         isRecent = false;
-         GetCardNumber();
-         // check to see if this was displayed recently
-         
-//       showqueuestuff();
-         for (i=g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] - 10 ; i < g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] ; i++)
-         {
-           if (i >= 0)
-           {
-             if (g_CardShowQueue[gc_Q_DeckDisplay_idx_Previous][i] == g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx])
-              {
-                isRecent = true;
-              }
-          }
-         }
-         }
-      }  
-  //   alert("newcard1 Q=" + g_CurrentShowQ + " & idx=" + g_CurrentShowIdx + " val=" + g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]);
-     
-     
-     g_CurrentShowSide = 1;   
-     //  whatif the slide is blank? - add error correction on the side value
-     tmp = g_CardDeckArray[g_CurrentShowSide][g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]];
-     if (tmp.length < 5)
-       { FlipCard(false, 0); }
-     ShowCardSide(g_CurrentShowSide,g_CurrentShowIdx, g_CurrentShowQ);
-     
-     // and finally, store this card into the Previous Queue
-     if (!g_isShowingPrevious)
-       { StorePreviousCard (); }
-        
-  //   alert("newcard2 Q=" + g_CurrentShowQ + " & idx=" + g_CurrentShowIdx + " val=" + g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]);
-    } // if the statistics are not displayed 
-   }    
-   
-
-
-function GetCardNumber()
- {
-   var tmp
-   // there are 3 possible queue configurations - pull from one of the queues first
-       if (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyNotShown] > 0)  // if cards exist in the not shown queue
+     // there are 3 possible queue configurations - pull from one of the queues first
+     if (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyNotShown] > 0)  // if cards exist in the not shown queue
        {
          tmp = Math.random();
          if (tmp < 0.5)
-           { g_CurrentShowQ = gc_Q_DeckDisplay_idx_ReadyNotShown; }
+           { queueNum = gc_Q_DeckDisplay_idx_ReadyNotShown; }
           else
            {
              if (tmp > 0.9)
-               { g_CurrentShowQ = gc_Q_DeckDisplay_idx_ReadyEasy; }
+               { queueNum = gc_Q_DeckDisplay_idx_ReadyEasy; }
               else // the tmp value is between 0.5 and 0.9
-               { g_CurrentShowQ = gc_Q_DeckDisplay_idx_ReadyHard; }
+               { queueNum = gc_Q_DeckDisplay_idx_ReadyHard; }
            }
        }
       else
@@ -579,166 +530,61 @@ function GetCardNumber()
          if (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyHard] > 0)  // all cards are easy or hard - do hard cards exist?
            {
              if (Math.random() < 0.8)
-               { g_CurrentShowQ = gc_Q_DeckDisplay_idx_ReadyHard; }
+               { queueNum = gc_Q_DeckDisplay_idx_ReadyHard; }
                else
-               { g_CurrentShowQ = gc_Q_DeckDisplay_idx_ReadyEasy; }
+               { queueNum = gc_Q_DeckDisplay_idx_ReadyEasy; }
            }
           else  // Nope.  only easy cards are left
            {
-             g_CurrentShowQ = gc_Q_DeckDisplay_idx_ReadyEasy;
+             queueNum = gc_Q_DeckDisplay_idx_ReadyEasy;
            }
        } 
      // a random choice was made, see if items exist in that queue before selecting a card
      // yeah, there are 3 if's here.  i don't know which one was chosen, so let's go through all them in priority
-     if ( g_CardShowQueueSize[g_CurrentShowQ] <= 0)  
-           { g_CurrentShowQ = gc_Q_DeckDisplay_idx_ReadyNotShown; }
-     if ( g_CardShowQueueSize[g_CurrentShowQ] <= 0)
-           { g_CurrentShowQ = gc_Q_DeckDisplay_idx_ReadyHard; }
-     if ( g_CardShowQueueSize[g_CurrentShowQ] <= 0)
-           { g_CurrentShowQ = gc_Q_DeckDisplay_idx_ReadyEasy; }
+     if ( g_CardShowQueueSize[queueNum] <= 0)  
+           { queueNum = gc_Q_DeckDisplay_idx_ReadyNotShown; }
+     if ( g_CardShowQueueSize[queueNum] <= 0)
+           { queueNum = gc_Q_DeckDisplay_idx_ReadyHard; }
+     if ( g_CardShowQueueSize[queueNum] <= 0)
+           { queueNum = gc_Q_DeckDisplay_idx_ReadyEasy; }
 
-     var cardNum= Math.floor(Math.random()*g_CardShowQueueSize[g_CurrentShowQ]);
+     var cardNum= Math.floor(Math.random()*g_CardShowQueueSize[queueNum]);
 
-     g_CurrentShowQ = g_CurrentShowQ;
+     g_CurrentShowQ = queueNum;
      g_CurrentShowIdx = cardNum;
           
- }
+  //   alert("newcard1 Q=" + g_CurrentShowQ + " & idx=" + g_CurrentShowIdx + " val=" + g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]);
+     
+     
+     g_CurrentShowSide = 1;   
+     //  whatif the slide is blank? - add error correction on the side value
+     tmp = g_CardDeckArray[g_CurrentShowSide][g_CardShowQueue[queueNum][cardNum]];
+     if (tmp.length < 5)
+       { FlipCard(false, 0); }
+     ShowCardSide(g_CurrentShowSide,cardNum, queueNum);
+   
+        
+  //   alert("newcard2 Q=" + g_CurrentShowQ + " & idx=" + g_CurrentShowIdx + " val=" + g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]);
+    } // if the statistics are not displayed 
+   }    
+   
 
-
-
-// ****************************************************************************
-  function StorePreviousCard()
+// **************************************************************************** 
+  function ShowPrevCard()
    {
-
-    // alert("storing Q=" + g_CurrentShowQ + " & idx=" + g_CurrentShowIdx + " val=" + g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]);
-     
- //    showqueuestuff();
-     
-     
-     g_CardShowQueue[gc_Q_DeckDisplay_idx_Previous][g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous]] = g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx];  // this card
-     g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous]++;
-     
-     if (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] >= g_CardCount-2)
-       {
-         g_CardShowQueue[gc_Q_DeckDisplay_idx_Previous][0] = -1;
-         // showqueuestuff();
-       }
-     
-  //   showqueuestuff();
-     
-     
-     Q_CompressAll();
-   }
-   
-
-
-
-
-
-// **************************************************************************** 
-  function ShowPrevCard() // go back one in the previous stack
-   {  
-     var isfound=false;
-     var i,k;
-     
-     if (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] > 0)
-       { 
-         if (g_isShowingPrevious)
-          {
-            if (g_Prev_Idx > 0)
-              {g_Prev_Idx--;}
-          }
-         else
-          { 
-            g_isShowingPrevious = true;
-            g_Prev_Idx = g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] - 2;  // get the most recent addition
-            if (g_Prev_Idx < 0)
-              { g_isShowingPrevious = false;  }
-          }
-          
-         // go out and look for the card in the queues - set the queue number and index - then show it 
-         isfound = false;
-         for (i = 0; (i < 3) && !isfound ; i++)
-         {
-           for (k = 0; k < (g_CardShowQueueSize[i]) && !isfound ; k++)
-             {
-               if (g_CardShowQueue[i][k] == g_CardShowQueue[g_Prev_Idx])
-                 {
-                   alert("Found Card " + g_CardShowQueue[i][k] + " ,, " + g_CardShowQueue[g_Prev_Idx] +
-                      " // g_Prev_Idx = " + g_Prev_Idx + " ")
-                   g_CurrentShowQ = i;
-                   g_CurrentShowIdx = k;
-                   isfound = true;
-                 }
-             }
-         } 
-         if (isfound && g_isShowingPrevious ) 
-         {
-           g_CurrentShowSide = 1;  
-           ShowCardSide(g_CurrentShowSide,g_CurrentShowIdx, g_CurrentShowQ);
-         }
-         else
-         {
-           ShowNewCard();
-         }
-       }
-     }
+     if (g_Prev_Idx >= 0)
+     {
+       g_Prev_Idx = g_CurrentShowIdx = g_Prev_Idx;  // store this value
+       var cardNum= g_Prev_Idx;
        
- 
-// **************************************************************************** 
-  function ShowPrevCard_next() // in the previous stack, go forward one
-   {  
-     var isfound=false;
-     var i,k;
-     
-     if (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] > 0)
-       { 
-         if (g_isShowingPrevious)
-          {
-              g_Prev_Idx++;
-              if (g_Prev_Idx >= g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous])
-              { g_isShowingPrevious = false; }
-          }
-
-         if ( g_isShowingPrevious )
-         {
-           // go out and look for the card in the queues - set the queue number and index - then show it 
-           isfound = false;
-           for (i = 0; (i < 3) && !isfound ; i++)
-           {
-             for (k = 0; k < (g_CardShowQueueSize[i]) && !isfound ; k++)
-               {
-                 if (g_CardShowQueue[i][k] == g_CardShowQueue[g_Prev_Idx])
-                   {
-                     g_CurrentShowQ = i;
-                     g_CurrentShowIdx = k;
-                     isfound = true;
-                   }
-               }
-           } 
-           if (isfound) 
-           {
-             g_CurrentShowSide = 1;  
-             ShowCardSide(g_CurrentShowSide,g_CurrentShowIdx, g_CurrentShowQ);
-           }
-         }
-        else
-         {
-           ShowNewCard();
-         }
+       g_CurrentShowIdx = cardNum;
+       g_CurrentShowSide = 1; 
+       g_CurrentShowQ = g_Prev_Q;
+       ShowCardSide(g_CurrentShowSide,cardNum, g_CurrentShowQ);
+       g_Prev_Idx = -1;
+       g_Prev_Q = -1;
      }
-    }
-       
-   
-  
-  
-  
-  
-  
-  
-  
-  
-  
+   }    
       
 
 // **************************************************************************** 
@@ -786,10 +632,6 @@ function GetCardNumber()
    {
      var t; 
      var buildhtml = "";
-            
- //  alert ("showcardside(" + inSide + "," + inCardIdx + "," + inQueue + ")");
-     var showCardIdx = g_CardShowQueue[inQueue][inCardIdx];
-
      
        buildhtml = buildhtml + '<table cols=3 border=0 width="100%">';
      
@@ -797,59 +639,40 @@ function GetCardNumber()
       buildhtml = buildhtml + '  <tr>  '; 
         
       buildhtml = buildhtml + '    <td align=left width="30%">';
-      if ( false && (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] > 0) &&  
-          ( (g_Prev_Idx > 0) || (!g_isShowingPrevious && (g_Prev_Idx <= 1)) ) )
-        {
-          buildhtml = buildhtml + '      <a href="javascript:ShowPrevCard();"> ';
-          buildhtml = buildhtml + '      <img src="App/Buttons/Button_Previous.png" class="Buttons" '; 
-          buildhtml = buildhtml + '             ontouchstart="ButtonDown_Previous(this);" onmousedown="ButtonDown_Previous(this);" ';
-          buildhtml = buildhtml + '             ontouchend="ButtonUp_Previous(this);" onmouseup="ButtonUp_Previous(this);" >  ';     
-          buildhtml = buildhtml + '       </a> ';
-        }
-       else
-        {
-          buildhtml = buildhtml + '            &nbsp; ';
-        }
+      
+//      buildhtml = buildhtml + '      <a href="javascript:ShowPrevCard();"> ';
+//      buildhtml = buildhtml + '      <img src="App/Buttons/Button_Previous.png" class="Buttons" '; 
+//      buildhtml = buildhtml + '             ontouchstart="ButtonDown_Previous(this);" onmousedown="ButtonDown_Previous(this);" ';
+//      buildhtml = buildhtml + '             ontouchend="ButtonUp_Previous(this);" onmouseup="ButtonUp_Previous(this);" >  ';     
+//      buildhtml = buildhtml + '       </a> ';
+      buildhtml = buildhtml + '            &nbsp; ';
       buildhtml = buildhtml + '    </td>';
         
       buildhtml = buildhtml + '    <td align=center>';
 //      buildhtml = buildhtml + g_CardTypeDisplay[inQueue]   // removed to put in the flip card button
-//      buildhtml = buildhtml + '      <a href="javascript:SwypeDown ();"> ';
+      buildhtml = buildhtml + '      <a href="javascript:SwypeDown ();"> ';
       buildhtml = buildhtml + '      <img src="App/Buttons/Button_Flip.png" class="Buttons" '; 
       buildhtml = buildhtml + '             ontouchstart="ButtonDown_FlipCard(this);" onmousedown="ButtonDown_FlipCard(this);" ';
       buildhtml = buildhtml + '             ontouchend="ButtonUp_FlipCard(this);" onmouseup="ButtonUp_FlipCard(this);" >  ';
-//      buildhtml = buildhtml + '       </a> ';
+      buildhtml = buildhtml + '       </a> ';
       buildhtml = buildhtml + '    </td>';
       
       buildhtml = buildhtml + '    <td align=right  width="30%">';
-//      buildhtml = buildhtml + '      <a href="javascript:SwypeLeft ();"> ';      
+      buildhtml = buildhtml + '      <a href="javascript:SwypeLeft ();"> ';      
       buildhtml = buildhtml + '        <img src="App/Buttons/Button_Skip_Next.png" class="Buttons" '; 
       buildhtml = buildhtml + '             ontouchstart="ButtonDown_Skip_Next(this);" onmousedown="ButtonDown_Skip_Next(this);" ';
       buildhtml = buildhtml + '             ontouchend="ButtonUp_Skip_Next(this);" onmouseup="ButtonUp_Skip_Next(this);" >  ';
-//      buildhtml = buildhtml + '       </a> ';
+      buildhtml = buildhtml + '       </a> ';
       buildhtml = buildhtml + '    </td>';
       
       buildhtml = buildhtml + '  </tr>  ';  
       buildhtml = buildhtml + '  </table>  ';  
       
-      
-      
-       // debugging
-       
-  //    buildhtml = buildhtml + "card " + showCardIdx + "<br>"; // for debugging the sides
-  //    buildhtml = buildhtml + "Queue " + inQueue + " index=" + inCardIdx + "<br>"; // for debugging the sides
-  //    buildhtml = buildhtml + "card side " + g_CurrentShowSide + "<br>"; // for debugging the sides
-  //    
-  //    buildhtml = buildhtml + "prev Q == " + g_Prev_Idx + " / " + g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] + "<br>"; // for debugging the sides
+//      buildhtml = buildhtml + "showing card side " + g_CurrentShowSide + "<br>"; // for debugging the sides
 
        buildhtml = buildhtml + "<br>";
-       
-       
-       
-       
-       
-       
-       
+ //  alert ("showcardside(" + inSide + "," + inCardIdx + "," + inQueue + ")");
+     var showCardIdx = g_CardShowQueue[inQueue][inCardIdx];
 
  //  alert ("showcardside(" + inSide + "," + inCardIdx + "," + inQueue + "," + showCardIdx + ")");
      t = document.getElementById('showcard');
@@ -900,7 +723,6 @@ function event_HandleTouchEnd(evt)
     thisY = evt.changedTouches[0].pageY;
    // alert ("square 5 is " + Square(5));    
     dist = Math.sqrt( Square(prevX - thisX) + Square(prevY - thisY) );
-    g_TouchDist = dist;  // put it out there for the button up routines to catch
     if (prevX == thisX)
       {
         isVertical = true;
@@ -972,24 +794,25 @@ function SwypeLeft ()  // next
     //alert("Swype Left  <--");
     // remove one of the elements from the recent shown queues and place into the ready queue
     // first, check the hard queue - if empty then remove from the easy queue
-//    if (Math.random() > 0.7)  // don't do this all the time
-//    {
-//     if (  g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownHard] > 0)
-//       { 
-//         Q_readyToShow_Hard();
-//       }
-//      else
-//       {
-//         if (  g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownEasy] > 0)
-//           {         
-//              Q_readyToShow_Easy();
-//           }
-//       }
-//     }
+    if (Math.random() > 0.7)  // don't do this all the time
+    {
+     if (  g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownHard] > 0)
+       { 
+         Q_readyToShow_Hard();
+       }
+      else
+       {
+         if (  g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownEasy] > 0)
+           {         
+              Q_readyToShow_Easy();
+           }
+       }
+     }
     
     //  later development - may need to validate that the indexes did not change due to compression
-//     Q_Balance();  
-
+     Q_Balance();  
+     g_Prev_Idx = g_CurrentShowIdx;  // store this value
+     g_Prev_Q = g_CurrentShowQ;  // and the previous queue
      
     ShowNewCard ();
   }
@@ -1026,7 +849,7 @@ function showqueuestuff()
          {
            var showstuff = 'Contents ===== \n';
            var i, k;
-           for (k=3; k<4; k++)
+           for (k=0; k<5; k++)
            {
              showstuff = showstuff + "\n  Queue " + k + " (" + g_CardShowQueueSize[k] + ")\n";
              for (i=0; i<g_CardShowQueueSize[k]; i++)
@@ -1045,8 +868,8 @@ function ShowStats()
  {
    var statshtml = '';
    var t;     
-   var totEasy = g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyEasy];
-   var totHard = g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyHard];
+   var totEasy = g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyEasy]+g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownEasy];
+   var totHard = g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyHard]+g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownHard];
 
    if (g_StatisticsDisplayed)
    { CloseStats(); }
@@ -1304,7 +1127,7 @@ function ShowHowUsed()
 
       
       statshtml = statshtml + ' <tr><td colspan=2 align=left>';
-      statshtml = statshtml + '  <B>Note:</b>  Some cards have more than two sides.  ';
+      statshtml = statshtml + '  <B>Note:</b>  Some cards have more than one side.  ';
       statshtml = statshtml + '  This way, a card can have an image, a question, an answer, and trivia. ';
       statshtml = statshtml + ' </td></tr>';   
 //      statshtml = statshtml + ' <tr><td>&nbsp;</td></tr>';   // blank row
@@ -1385,25 +1208,25 @@ function ShowHowUsed()
 // ****************************************************************************
 
 
-//function Q_readyToShow_Easy()
-//  {
-//             g_CardShowQueue[gc_Q_DeckDisplay_idx_ReadyEasy][g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyEasy]] = g_CardShowQueue[gc_Q_DeckDisplay_idx_ShownEasy][0];  // fifo
-//             g_CardShowQueue[gc_Q_DeckDisplay_idx_ShownEasy][0] = -1;  // empty this cell out
-//             g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyEasy]++;
-//             g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownEasy]--;
-//             
-//    Q_CompressAll(); // remove unused from all of the queues 
-//  }
+function Q_readyToShow_Easy()
+  {
+             g_CardShowQueue[gc_Q_DeckDisplay_idx_ReadyEasy][g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyEasy]] = g_CardShowQueue[gc_Q_DeckDisplay_idx_ShownEasy][0];  // fifo
+             g_CardShowQueue[gc_Q_DeckDisplay_idx_ShownEasy][0] = -1;  // empty this cell out
+             g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyEasy]++;
+             g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownEasy]--;
+             
+    Q_CompressAll(); // remove unused from all of the queues 
+  }
   
 
-//function Q_readyToShow_Hard()
-//  {
-//         g_CardShowQueue[gc_Q_DeckDisplay_idx_ReadyHard][g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyHard]] = g_CardShowQueue[gc_Q_DeckDisplay_idx_ShownHard][0];  // fifo
-//         g_CardShowQueue[gc_Q_DeckDisplay_idx_ShownHard][0] = -1;  // empty this cell out
-//         g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyHard]++;
-//         g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownHard]--;
-//         Q_CompressAll(); // remove unused from all of the queues 
-//  }  
+function Q_readyToShow_Hard()
+  {
+         g_CardShowQueue[gc_Q_DeckDisplay_idx_ReadyHard][g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyHard]] = g_CardShowQueue[gc_Q_DeckDisplay_idx_ShownHard][0];  // fifo
+         g_CardShowQueue[gc_Q_DeckDisplay_idx_ShownHard][0] = -1;  // empty this cell out
+         g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyHard]++;
+         g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownHard]--;
+         Q_CompressAll(); // remove unused from all of the queues 
+  }  
   
   
 /* *** */  
@@ -1426,7 +1249,7 @@ function ShowHowUsed()
   function Q_initAllQueuesEmpty()
    {
      var i;
-     for (i=0; i<4; i++)
+     for (i=0; i<5; i++)
        { g_CardShowQueueSize[i] = 0;}
      
    }
@@ -1437,7 +1260,7 @@ function ShowHowUsed()
      var i,k, n;
      var tmpval;  // may not need this one
      
-     for (i=0; i<4; i++)  // run through all 5 queues
+     for (i=0; i<5; i++)  // run through all 5 queues
       {
         for (k=0; k<g_CardShowQueueSize[i]; k++)
          { 
@@ -1456,17 +1279,17 @@ function ShowHowUsed()
    }
 
 /* *** */  
-//  function Q_Balance()  // ensure the easy and hard queues do not have too many elements standing idle
-//   {
-//      var c_maxReadyEasySize = Math.floor(g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyEasy] / 4);
-//      var c_maxReadyHardSize = Math.floor(g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyHard] / 4);
-//      
-//      if (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownEasy] > c_maxReadyEasySize)
-//        { Q_readyToShow_Easy(); }
-//      if (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownHard] > c_maxReadyHardSize)
-//        { Q_readyToShow_Hard(); }
-//      
-//   }
+  function Q_Balance()  // ensure the easy and hard queues do not have too many elements standing idle
+   {
+      var c_maxReadyEasySize = Math.floor(g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyEasy] / 4);
+      var c_maxReadyHardSize = Math.floor(g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyHard] / 4);
+      
+      if (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownEasy] > c_maxReadyEasySize)
+        { Q_readyToShow_Easy(); }
+      if (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ShownHard] > c_maxReadyHardSize)
+        { Q_readyToShow_Hard(); }
+      
+   }
    
    
    
@@ -1482,7 +1305,6 @@ function ButtonDown_Begin (inThis)
  {
    // var t = document.getElementById('easyhardbuttons1');
    inThis.src = "App/Buttons/Button_Begin_down.png";
-   g_depressed_Begin = true;
  }
  
  
@@ -1490,11 +1312,6 @@ function ButtonUp_Begin (inThis)
  {
    // var t = document.getElementById('easyhardbuttons1');
    inThis.src = "App/Buttons/Button_Begin.png";
-   if (g_depressed_Begin)
-   {
-     
-   }
-   g_depressed_Begin = false;
  }
  
  
@@ -1604,7 +1421,6 @@ function ButtonDown_Skip_Next (inThis)
  {
    // var t = document.getElementById('easyhardbuttons1');
    inThis.src = "App/Buttons/Button_Skip_Next_down.png";
-   g_depressed_SkipNext = true;
  }
  
  
@@ -1612,14 +1428,6 @@ function ButtonUp_Skip_Next (inThis)
  {
    // var t = document.getElementById('easyhardbuttons1');
    inThis.src = "App/Buttons/Button_Skip_Next.png";
-   //alert("Last Travel = " + g_TouchDist);
-      if (g_depressed_SkipNext)
-   {
-      SwypeLeft ();
-   }
-   g_depressed_SkipNext = false;
-   
-  
  }
  
     // ****************************************************************************
@@ -1636,7 +1444,6 @@ function ButtonUp_FlipCard (inThis)
  {
    // var t = document.getElementById('easyhardbuttons1');
    inThis.src = "App/Buttons/Button_Flip.png";
-   SwypeDown ();
  }
   
     // ****************************************************************************
