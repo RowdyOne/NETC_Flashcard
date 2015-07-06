@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<!-- this is the first page - introduction page
+     This page reads the config file and displays the content
+     The user clicks a button to begin and calls another page
+     to display the flash cards.     
+-->
+
+<html style="height: 100%;">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="App/css/StyleSheet.css" />
+        <title>NETC FlashCard App</title>
+        
+    </head>
+    <body style="height: 100%;" onload="InitHomePage();">
+    
+    
+        <script type="text/javascript" src="cordova.js"></script> 
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="App/js/CardScripts.js"></script>
+
+        
+      <table width=100% cols=2 border=0 style="height: 100%;">
+       <tr height=10>
+          <td colspan=2> &nbsp; </td>
+       </tr>
+       <tr height=50>
+         <td width=50% align=left>
+            <img src="App/Images/NETC_NEW_transp.png" class=MainLogo_variable>
+         </td>
+         <td align=right>
+           <img src="App/Images/Seal_of_RTC_Great_Lakes.png" class=MainLogo_variable>
+         </td>
+       <tr>
+         <td width=100% colspan=2 align=center class=homepagetext>
+         <div id="homepage" name="homepage">
+          <div id="AppName" name="AppName">
+               =app name
+            </div>
+               <br>
+               <br>
+            <div id="DeckName" name="DeckName">
+               =deck name
+            </div>         
+               <br>
+               <br>
+            <div id="CourseName" name="CourseName">
+               =course name
+            </div>
+        </div>
+
+    <br>    
+         </td>
+       </tr>
+       
+       
+<!--
+       <tr>
+         <td colspan=2>
+           <div id="testdebug" name="testdebug">
+           </div>
+         </td>
+        </tr>
+-->    
+   
+       <tr height=30> <!-- begin button -->
+          <td colspan=2 align=center>
+            <a href="ShowCards.html"><img src="App/Buttons/Button_Begin.png" class="Buttons" 
+                  ontouchstart="ButtonDown_Begin(this);" onmousedown="ButtonDown_Begin(this);"
+                  ontouchend="ButtonUp_Begin(this);" onmouseup="ButtonUp_Begin(this);" > 
+            </a>  
+                  
+       <!--    onmousedown="ButtonDown_Begin(this);" onmouseup="ButtonUp_Begin(this);">  -->       
+          
+          </td>
+        </tr>       
+        <tr height=30> <!-- bottom option buttons -->
+          <td align=left width=50%>
+             <!-- <img src="App/Buttons/Button_Options.png" height=40> -->
+             
+   <!--        <a href="javascript:ShowHowUsed();">
+             <img src="App/Buttons/Button_ShowUse.png" class="Buttons"
+                  ontouchstart="ButtonDown_ShowUse(this);" onmousedown="ButtonDown_ShowUse(this);"
+                  ontouchend="ButtonUp_ShowUse(this);" onmouseup="ButtonUp_ShowUse(this);" >   
+           </a>
+     -->  
+           &nbsp;
+          
+          </td>
+          <td align=center>
+           <!--
+            <a href="javascript:showwindowsize();">
+             <img src="App/Buttons/Button_Options.png" class="Buttons">
+            </a>
+           -->
+          </td>
+        </tr>
+      </table>
+      
+    </body>
+</html>
