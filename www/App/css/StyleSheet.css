@@ -169,7 +169,7 @@ td.carddisplaytext
  }
 .homepagetext
  {
-   color: dark blue;
+   color: blue;
    text-align: center;
    font-size: 50px;
    font-family: Serif;
@@ -212,6 +212,7 @@ td.carddisplaytext
  }
 .homepagetext
  {
+   color: dark blue;
    font-size: 40px;
  }
  .usehelptext
