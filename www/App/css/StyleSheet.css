@@ -133,7 +133,7 @@ h1 {
 a
   {
     text-decoration: none;
-    color:  blue;
+    color:  #000099; /* dark blue */
     vertical-align: center;
   } 
   
@@ -160,7 +160,7 @@ img.helpimages
   
 td.carddisplaytext
  {
-   color: dark blue;
+   color: #000099; /* dark blue */
    text-align: center;
    font-size: 35px;
    font-family: Serif;
@@ -169,7 +169,7 @@ td.carddisplaytext
  }
 .homepagetext
  {
-   color: blue;
+   color: #000099; /* dark blue */
    text-align: center;
    font-size: 50px;
    font-family: Serif;

@@ -738,18 +738,18 @@ function GetCardNumber()
       
 
 // **************************************************************************** 
-  function FlipCard(inIsShow, inCount)  // need to suppress showing a card if multiple entries are blank
+  function FlipCard(inIsShow, inCount, inIsAhref)  // need to suppress showing a card if multiple entries are blank
    {
    if (!g_StatisticsDisplayed)
    { 
      var tmp;
      g_CurrentShowSide++;
-  //   alert("flippin " + g_CurrentShowSide + " " + gc_Card_TotalElements);
+ //    alert("flippin " + g_CurrentShowSide + " " + gc_Card_TotalElements);
      if (g_CurrentShowSide >= (gc_Card_TotalElements-1))  // cannot show more sides than are supplied
        { g_CurrentShowSide = 1; }
        tmp = g_CardDeckArray[g_CurrentShowSide][g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]];
      if ((tmp.length < 6) && (inCount < 7))
-       { FlipCard(false, inCount+1) }
+       { FlipCard(false, inCount+1, false) }
      
   //   alert("flippin " + g_CurrentShowSide + " " + gc_Card_TotalElements);  
      if (inIsShow)  
@@ -760,7 +760,7 @@ function GetCardNumber()
 
 
 // **************************************************************************** 
-  function FlipCardBack(inIsShow, inCount)
+  function FlipCardBack(inIsShow, inCount, inIsAhref)
    {
    if (!g_StatisticsDisplayed)
    {  
@@ -770,7 +770,7 @@ function GetCardNumber()
        { g_CurrentShowSide = gc_Card_TotalElements - 2; }
      tmp = g_CardDeckArray[g_CurrentShowSide][g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]];
      if ((tmp.length < 6) && (inCount < 7))
-       { FlipCardBack(false, inCount+1) }  
+       { FlipCardBack(false, inCount+1, false) }  
      if (inIsShow)  
        { ShowCardSide(g_CurrentShowSide,g_CurrentShowIdx, g_CurrentShowQ);  }
    }
@@ -851,7 +851,9 @@ function GetCardNumber()
      t = document.getElementById('showcard');
   //   buildhtml = buildhtml + '<a href="javascript:FlipCard();">';
   
-     buildhtml = buildhtml + ' <a href="javascript:FlipCard(true, 0);" style="height:100%;width:100%;display: block;vertical-align: center;"> ';
+ //    buildhtml = buildhtml + ' <a href="javascript:FlipCard(true, 0);" style="height:100%;width:100%;display: block;vertical-align: center;"> ';
+ //    buildhtml = buildhtml + ' <a href="#" ontouchend="javascript:FlipCard(true, 0, true);return false;" style="height:100%;width:100%;display: block;vertical-align: center;"> ';
+     buildhtml = buildhtml + ' <a href="#" style="height:100%;width:100%;display: block;vertical-align: center;"> ';
      if (inSide == 1)   // if this is an image
      {
        buildhtml = buildhtml + "<img src='" + gc_DB_ImagePathPrefix;
@@ -955,14 +957,14 @@ function SwypeUp ()
   {
     g_StatisticsDisplayed = false;
    // alert("Swype UP ^^^ ");
-    FlipCardBack (true, 0);
+    FlipCardBack (true, 0, false);
   }
   
 function SwypeDown ()
   {
     g_StatisticsDisplayed = false;
-    //alert("Swype DOWN");
-    FlipCard (true, 0);
+  //  alert("Swype DOWN");
+    FlipCard (true, 0, false);
   }
   
 function SwypeLeft ()  // next
@@ -1063,7 +1065,7 @@ function ShowStats()
             alert (showstuff);
             //jAlert (showstuff, "Flashcard Status");
 */      
-      statshtml = statshtml + '      <a href="javascript:CloseStats();"> ';
+//      statshtml = statshtml + '      <a href="javascript:CloseStats();"> ';
       statshtml = statshtml + '  <table cols=2 align=center>  ';    
       statshtml = statshtml + '  <tr>  '; 
       statshtml = statshtml + '  <td colspan=2>  ';
@@ -1104,13 +1106,13 @@ function ShowStats()
       statshtml = statshtml + '       <tr height=30>';
       statshtml = statshtml + '    <td colspan=2 align=center>';
       statshtml = statshtml + '      <img src="App/Buttons/Button_Continue.png" class="Buttons" '; 
-      statshtml = statshtml + '             ontouchstart="ButtonDown_Continue(this);" onmousedown="ButtonDown_Continue(this);" ';
-      statshtml = statshtml + '             ontouchend="ButtonUp_Continue(this);" onmouseup="ButtonUp_Continue(this);" >  ';
+      statshtml = statshtml + '             ontouchstart="ButtonDown_ContinueStats(this);" ontouchend="ButtonUp_ContinueStats(this);"  >';
+  //    statshtml = statshtml + '             onmousedown="ButtonDown_ContinueStats(this);"  onmouseup="ButtonUp_ContinueStats(this);" >  ';
                   
       statshtml = statshtml + '    </td>';
       statshtml = statshtml + '  </tr>  ';
       
-      statshtml = statshtml + '  </a>  ';
+ //     statshtml = statshtml + '  </a>  ';
       statshtml = statshtml + '  </table>  ';
       
            
@@ -1183,7 +1185,7 @@ function ShowHowUsed()
             alert (showstuff);
             //jAlert (showstuff, "Flashcard Status");
 */      
-      statshtml = statshtml + '      <a href="javascript:CloseHowUsed();"> ';
+ //     statshtml = statshtml + '      <a href="javascript:CloseHowUsed();"> ';
       statshtml = statshtml + '  <table cols=2 align=center class=usehelptext border=0 width=95%>  ';    
       statshtml = statshtml + '  <tr>  '; 
       statshtml = statshtml + '  <td colspan=2 align=left class="usehelptextBOLD">  ';
@@ -1313,13 +1315,13 @@ function ShowHowUsed()
       statshtml = statshtml + '       <tr height=30>';
       statshtml = statshtml + '    <td colspan=2 align=center>';
       statshtml = statshtml + '      <img src="App/Buttons/Button_Continue.png" class="Buttons" '; 
-      statshtml = statshtml + '             ontouchstart="ButtonDown_ContinueHome(this);" onmousedown="ButtonDown_ContinueHome(this);" ';
-      statshtml = statshtml + '             ontouchend="ButtonUp_ContinueHome(this);" onmouseup="ButtonUp_ContinueHome(this);" >  ';
+      statshtml = statshtml + '             ontouchstart="ButtonDown_ContinueHomeUse(this);"   ontouchend="ButtonUp_ContinueHomeUse(this);" > ';
+//      statshtml = statshtml + '              onmousedown="ButtonDown_ContinueHome(this);" onmouseup="ButtonUp_ContinueHome(this);" >  ';
                   
       statshtml = statshtml + '    </td>';
       statshtml = statshtml + '  </tr>  ';
       
-      statshtml = statshtml + '  </a>  ';
+ //     statshtml = statshtml + '  </a>  ';
       statshtml = statshtml + '  </table>  ';
       
       t = document.getElementById('showcard');      
@@ -1650,16 +1652,34 @@ function ButtonUp_ShowUse (inThis)
  // ****************************************************************************
 
    
-function ButtonDown_ContinueHome (inThis)
+function ButtonDown_ContinueHomeUse (inThis)
  {
    // var t = document.getElementById('easyhardbuttons1');
    inThis.src = "App/Buttons/Button_Continue_down.png";
  }
  
  
-function ButtonUp_ContinueHome (inThis)
+function ButtonUp_ContinueHomeUse (inThis)
  {
    // var t = document.getElementById('easyhardbuttons1');
    inThis.src = "App/Buttons/Button_Continue.png";
+   CloseHowUsed();
+ }   
+ 
+     
+ // ****************************************************************************
+
+function ButtonDown_ContinueStats (inThis)
+ {
+   // var t = document.getElementById('easyhardbuttons1');
+   inThis.src = "App/Buttons/Button_Continue_down.png";
+ }
+ 
+ 
+function ButtonUp_ContinueStats (inThis)
+ {
+   // var t = document.getElementById('easyhardbuttons1');
+   inThis.src = "App/Buttons/Button_Continue.png";
+   CloseStats();
  }
  
