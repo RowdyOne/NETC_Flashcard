@@ -6,6 +6,8 @@
  * Original Author: Rowdy Lienhart
  */
  
+ var gc_VersionNumber = "0.0.0 alpha"
+ var gc_VersionDate = "10 July 2015"
   
   // Global Constants 
   var gc_ConfigFileName = 'App/FlashCards.cfg';
@@ -14,7 +16,7 @@
   // not used - var gc_DB_CardsShownFileName = 'Deck/Database/CardsShown.txt';
   var gc_DB_DeckStatusFileName = 'Deck/Database/DeckStatus.txt';
   var gc_ConfigRemark = '#';
-  var gc_DB_ImagePathPrefix = 'Deck/Images/'; // corrects for image path entries in the database
+  var gc_DB_ImagePathPrefix = 'Deck\\Images'; // corrects for image path entries in the database
   
   var gc_Q_DeckDisplay_idx_ReadyNotShown = 0;
   var gc_Q_DeckDisplay_idx_ReadyEasy = 1;
@@ -98,6 +100,8 @@
       else
       { g_appName = "This device is not supported"; } 
        // set the values on the home page
+     t = document.getElementById('VersionInfo');
+     t.innerHTML = "Version " + gc_VersionNumber + " (" + gc_VersionDate + ")";   
      t = document.getElementById('AppName');
      t.innerHTML = g_AppName;
      t = document.getElementById('DeckName');
@@ -608,7 +612,7 @@ function GetCardNumber()
 
     // alert("storing Q=" + g_CurrentShowQ + " & idx=" + g_CurrentShowIdx + " val=" + g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]);
      
- //    showqueuestuff();
+     showqueuestuff();
      
      
      g_CardShowQueue[gc_Q_DeckDisplay_idx_Previous][g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous]] = g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx];  // this card
@@ -793,7 +797,7 @@ function GetCardNumber()
       buildhtml = buildhtml + '  <tr>  '; 
         
       buildhtml = buildhtml + '    <td align=left width="30%">';
-      if ( false && (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] > 0) &&  
+      if ( true && (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] > 0) &&  
           ( (g_Prev_Idx > 0) || (!g_isShowingPrevious && (g_Prev_Idx <= 1)) ) )
         {
 //          buildhtml = buildhtml + '      <a href="javascript:ShowPrevCard();"> ';
@@ -856,6 +860,13 @@ function GetCardNumber()
      buildhtml = buildhtml + ' <a href="#" style="height:100%;width:100%;display: block;vertical-align: center;"> ';
      if (inSide == 1)   // if this is an image
      {
+     
+     if (true)
+      {
+       buildhtml = buildhtml + "Android Image Debug -- img src='" + gc_DB_ImagePathPrefix;
+       buildhtml = buildhtml + g_CardDeckArray[inSide][showCardIdx];  
+       buildhtml = buildhtml + "' style=' max-height: 95%; max-width: 95%;' "
+      }
        buildhtml = buildhtml + "<img src='" + gc_DB_ImagePathPrefix;
        buildhtml = buildhtml + g_CardDeckArray[inSide][showCardIdx];  
        buildhtml = buildhtml + "' style=' max-height: 95%; max-width: 95%;' >"
