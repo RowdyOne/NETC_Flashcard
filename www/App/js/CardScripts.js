@@ -612,7 +612,7 @@ function GetCardNumber()
 
     // alert("storing Q=" + g_CurrentShowQ + " & idx=" + g_CurrentShowIdx + " val=" + g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]);
      
-     showqueuestuff();
+  //   showqueuestuff();
      
      
      g_CardShowQueue[gc_Q_DeckDisplay_idx_Previous][g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous]] = g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx];  // this card
@@ -797,7 +797,7 @@ function GetCardNumber()
       buildhtml = buildhtml + '  <tr>  '; 
         
       buildhtml = buildhtml + '    <td align=left width="30%">';
-      if ( true && (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] > 0) &&  
+      if ( false && (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] > 0) &&  
           ( (g_Prev_Idx > 0) || (!g_isShowingPrevious && (g_Prev_Idx <= 1)) ) )
         {
 //          buildhtml = buildhtml + '      <a href="javascript:ShowPrevCard();"> ';
@@ -861,7 +861,7 @@ function GetCardNumber()
      if (inSide == 1)   // if this is an image
      {
      
-     if (true)
+     if (false)
       {
        buildhtml = buildhtml + "Android Image Debug -- img src='" + gc_DB_ImagePathPrefix;
        buildhtml = buildhtml + g_CardDeckArray[inSide][showCardIdx];  
