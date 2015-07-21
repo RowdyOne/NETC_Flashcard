@@ -6,8 +6,8 @@
  * Original Author: Rowdy Lienhart
  */
  
- var gc_VersionNumber = "0.0.0 alpha"
- var gc_VersionDate = "10 July 2015"
+ var gc_VersionNumber = "0.0.1 alpha"
+ var gc_VersionDate = "21 July 2015"
   
   // Global Constants 
   var gc_ConfigFileName = 'App/FlashCards.cfg';
@@ -67,6 +67,8 @@
   
   var g_HowUseDisplayed = false;
   var g_homepagedata = '';
+  var g_HomePageFullHtml = '';
+  var g_ShowCardPageFullHtml = '';
   
   // see if this is an apple or android device
   var isAndroid = (/android/gi).test(navigator.appVersion),
@@ -291,7 +293,7 @@
           ParseDeckLine(lines[i]); 
        }
      } 
-    g_CurrentShowSide = 1; // start at the beginning   
+    g_CurrentShowSide = 2; // start at the beginning   
    // ShowNewCard();   
   }
   
@@ -465,7 +467,7 @@
     // alert("storing Q=" + g_CurrentShowQ + " & idx=" + g_CurrentShowIdx + " val=" + g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]);
      
  //    showqueuestuff();
-     
+     StorePreviousCard();
      g_CardShowQueue[gc_Q_DeckDisplay_idx_ReadyEasy][g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyEasy]] = g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx];  // this card
      g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx] = -1;  // empty this cell out
      g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyEasy]++;
@@ -486,7 +488,7 @@
   function StoreHardCard()
    {
      // gCardPrevious = -1
-     
+     StorePreviousCard(); 
      g_CardShowQueue[gc_Q_DeckDisplay_idx_ReadyHard][g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyHard]] = g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx];  // this card
      g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx] = -1;  // empty this cell out
      g_CardShowQueueSize[gc_Q_DeckDisplay_idx_ReadyHard]++;
@@ -506,6 +508,7 @@
      var isRecent = true;
      var loopcnt = 0;
      var i;
+    
      
    if (!g_StatisticsDisplayed)
    {  
@@ -517,6 +520,9 @@
      {
       isRecent = true;
       loopcnt=0;
+      
+      //StorePreviousCard ();  // store the current values
+   
       while (isRecent && (loopcnt < 5))  // only try a few times before giving up
       { 
          loopcnt++;
@@ -532,6 +538,8 @@
              if (g_CardShowQueue[gc_Q_DeckDisplay_idx_Previous][i] == g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx])
               {
                 isRecent = true;
+                //alert ('found recent ; loopcnt = ' + loopcnt + ' ; card number = ' + g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx] );
+                //showqueuestuff('RECENT');
               }
           }
          }
@@ -540,16 +548,14 @@
   //   alert("newcard1 Q=" + g_CurrentShowQ + " & idx=" + g_CurrentShowIdx + " val=" + g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]);
      
      
-     g_CurrentShowSide = 1;   
+     g_CurrentShowSide = 2;   
      //  whatif the slide is blank? - add error correction on the side value
      tmp = g_CardDeckArray[g_CurrentShowSide][g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]];
      if (tmp.length < 5)
        { FlipCard(false, 0); }
      ShowCardSide(g_CurrentShowSide,g_CurrentShowIdx, g_CurrentShowQ);
      
-     // and finally, store this card into the Previous Queue
-     if (!g_isShowingPrevious)
-       { StorePreviousCard (); }
+
         
   //   alert("newcard2 Q=" + g_CurrentShowQ + " & idx=" + g_CurrentShowIdx + " val=" + g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]);
     } // if the statistics are not displayed 
@@ -610,26 +616,35 @@ function GetCardNumber()
   function StorePreviousCard()
    {
 
+     // and finally, store this card into the Previous Queue
+     if (!g_isShowingPrevious)
+       { 
+       
     // alert("storing Q=" + g_CurrentShowQ + " & idx=" + g_CurrentShowIdx + " val=" + g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]);
-     
-  //   showqueuestuff();
-     
-     
-     g_CardShowQueue[gc_Q_DeckDisplay_idx_Previous][g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous]] = g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx];  // this card
-     g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous]++;
-     
-     if (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] >= g_CardCount-2)
+     if ((g_CurrentShowQ >= 0) && (g_CurrentShowIdx >= 0))
+     {
+   //   showqueuestuff('in');
+      
+    //  alert('Q number = ' + g_CurrentShowQ + ' idx = ' + g_CurrentShowIdx );
+    //  alert('card number = ' + g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]);
+      if (g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx] >= 0)
        {
-         g_CardShowQueue[gc_Q_DeckDisplay_idx_Previous][0] = -1;
-         // showqueuestuff();
+        g_CardShowQueue[gc_Q_DeckDisplay_idx_Previous][g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous]] = g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx];  // this card
+        g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous]++;
+        
+        if (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] >= g_CardCount-4)  // stay well below the maximum size of the array
+          {
+            g_CardShowQueue[gc_Q_DeckDisplay_idx_Previous][0] = -1;
+            Q_CompressAll(); // remove the empty element
+            g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous]--;
+            // showqueuestuff();
+          }
+        
        }
-     
-  //   showqueuestuff();
-     
-     
-     Q_CompressAll();
+      }
+  //    showqueuestuff('out');
+    }
    }
-   
 
 
 
@@ -641,7 +656,10 @@ function GetCardNumber()
      var isfound=false;
      var i,k;
      
-     if (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] > 0)
+     StorePreviousCard();
+ //    showqueuestuff('Show Previous Card');
+ //    alert('show previous start idx = ' + g_Prev_Idx + ' --- queue size = ' + g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] );
+     if (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] > 1)
        { 
          if (g_isShowingPrevious)
           {
@@ -651,21 +669,25 @@ function GetCardNumber()
          else
           { 
             g_isShowingPrevious = true;
-            g_Prev_Idx = g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] - 2;  // get the most recent addition
+            g_Prev_Idx = g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] - 2;  // get the most recent addition - well, the one before that
             if (g_Prev_Idx < 0)
               { g_isShowingPrevious = false;  }
           }
           
+    //     alert ('previous - get index = ' + g_Prev_Idx + ' --- card number = ' + g_CardShowQueue[gc_Q_DeckDisplay_idx_Previous][g_Prev_Idx] ) 
+          
+          
+          
          // go out and look for the card in the queues - set the queue number and index - then show it 
-         isfound = false;
-         for (i = 0; (i < 3) && !isfound ; i++)
+         isfound = false;  // looking for the specific card in the queues
+         for (i = 0; (i < 3) && !isfound ; i++)  /// look through all of the queues
          {
            for (k = 0; k < (g_CardShowQueueSize[i]) && !isfound ; k++)
              {
-               if (g_CardShowQueue[i][k] == g_CardShowQueue[g_Prev_Idx])
+               if (g_CardShowQueue[i][k] == g_CardShowQueue[gc_Q_DeckDisplay_idx_Previous][g_Prev_Idx])
                  {
-                   alert("Found Card " + g_CardShowQueue[i][k] + " ,, " + g_CardShowQueue[g_Prev_Idx] +
-                      " // g_Prev_Idx = " + g_Prev_Idx + " ")
+             //      alert("Found Card " + g_CardShowQueue[i][k] + " ,, " + g_CardShowQueue[g_Prev_Idx] +
+             //         " // g_Prev_Idx = " + g_Prev_Idx + " ")
                    g_CurrentShowQ = i;
                    g_CurrentShowIdx = k;
                    isfound = true;
@@ -674,14 +696,16 @@ function GetCardNumber()
          } 
          if (isfound && g_isShowingPrevious ) 
          {
-           g_CurrentShowSide = 1;  
+           g_CurrentShowSide = 2;  
            ShowCardSide(g_CurrentShowSide,g_CurrentShowIdx, g_CurrentShowQ);
          }
          else
          {
-           ShowNewCard();
+           ShowNewCard();  // if this happens, then there is yet another error in the code which must be fixed...
          }
        }
+       
+ //    alert('show previous end idx = ' + g_Prev_Idx);
      }
        
  
@@ -708,7 +732,7 @@ function GetCardNumber()
            {
              for (k = 0; k < (g_CardShowQueueSize[i]) && !isfound ; k++)
                {
-                 if (g_CardShowQueue[i][k] == g_CardShowQueue[g_Prev_Idx])
+                 if (g_CardShowQueue[i][k] == g_CardShowQueue[gc_Q_DeckDisplay_idx_Previous][g_Prev_Idx])
                    {
                      g_CurrentShowQ = i;
                      g_CurrentShowIdx = k;
@@ -718,13 +742,13 @@ function GetCardNumber()
            } 
            if (isfound) 
            {
-             g_CurrentShowSide = 1;  
+             g_CurrentShowSide = 2;  
              ShowCardSide(g_CurrentShowSide,g_CurrentShowIdx, g_CurrentShowQ);
            }
          }
         else
          {
-           ShowNewCard();
+           ShowNewCard();  // again, if this routine is used, another bug bites this juicy code
          }
      }
     }
@@ -750,7 +774,7 @@ function GetCardNumber()
      g_CurrentShowSide++;
  //    alert("flippin " + g_CurrentShowSide + " " + gc_Card_TotalElements);
      if (g_CurrentShowSide >= (gc_Card_TotalElements-1))  // cannot show more sides than are supplied
-       { g_CurrentShowSide = 1; }
+       { g_CurrentShowSide = 2; }
        tmp = g_CardDeckArray[g_CurrentShowSide][g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]];
      if ((tmp.length < 6) && (inCount < 7))
        { FlipCard(false, inCount+1, false) }
@@ -770,7 +794,7 @@ function GetCardNumber()
    {  
      var tmp;
      g_CurrentShowSide--;
-     if (g_CurrentShowSide < 1)  // cannot show negative card sides either
+     if (g_CurrentShowSide < 2)  // cannot show negative card sides either
        { g_CurrentShowSide = gc_Card_TotalElements - 2; }
      tmp = g_CardDeckArray[g_CurrentShowSide][g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx]];
      if ((tmp.length < 6) && (inCount < 7))
@@ -797,7 +821,7 @@ function GetCardNumber()
       buildhtml = buildhtml + '  <tr>  '; 
         
       buildhtml = buildhtml + '    <td align=left width="30%">';
-      if ( false && (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] > 0) &&  
+      if ( true && (g_CardShowQueueSize[gc_Q_DeckDisplay_idx_Previous] > 0) &&  
           ( (g_Prev_Idx > 0) || (!g_isShowingPrevious && (g_Prev_Idx <= 1)) ) )
         {
 //          buildhtml = buildhtml + '      <a href="javascript:ShowPrevCard();"> ';
@@ -858,21 +882,27 @@ function GetCardNumber()
  //    buildhtml = buildhtml + ' <a href="javascript:FlipCard(true, 0);" style="height:100%;width:100%;display: block;vertical-align: center;"> ';
  //    buildhtml = buildhtml + ' <a href="#" ontouchend="javascript:FlipCard(true, 0, true);return false;" style="height:100%;width:100%;display: block;vertical-align: center;"> ';
      buildhtml = buildhtml + ' <a href="#" style="height:100%;width:100%;display: block;vertical-align: center;"> ';
-     if (inSide == 1)   // if this is an image
-     {
+  //   if (inSide == 1)   // if this is an image
+  //   {
      
-     if (false)
+     if (false)  // for debugging image location problems - i.e. Pictures did not appear on Android
       {
        buildhtml = buildhtml + "Android Image Debug -- img src='" + gc_DB_ImagePathPrefix;
        buildhtml = buildhtml + g_CardDeckArray[inSide][showCardIdx];  
-       buildhtml = buildhtml + "' style=' max-height: 95%; max-width: 95%;' "
+       buildhtml = buildhtml + "' style=' max-height: 75%; max-width: 95%;' "
       }
+       
+ //      buildhtml = buildhtml + "card number " + showCardIdx + " = " + g_CardShowQueue[g_CurrentShowQ][g_CurrentShowIdx] + "<br>";  // debugging
+  //    if (g_CardDeckArray[1][showCardIdx].length > 0)
+  //      {
        buildhtml = buildhtml + "<img src='" + gc_DB_ImagePathPrefix;
-       buildhtml = buildhtml + g_CardDeckArray[inSide][showCardIdx];  
-       buildhtml = buildhtml + "' style=' max-height: 95%; max-width: 95%;' >"
-     }
-     else // otherwise, just show the data
-     { buildhtml = buildhtml + g_CardDeckArray[inSide][showCardIdx]; }
+       buildhtml = buildhtml + g_CardDeckArray[1][showCardIdx];  
+       buildhtml = buildhtml + "' style=' max-height: 75%; max-width: 95%;' >"
+  //     }
+      
+     buildhtml = buildhtml + '<br>';
+      buildhtml = buildhtml + g_CardDeckArray[inSide][showCardIdx]; 
+      //}
      //buildhtml = buildhtml + "<br> and what else";
      buildhtml = buildhtml + '</a>';
      
@@ -1001,7 +1031,7 @@ function SwypeLeft ()  // next
     //  later development - may need to validate that the indexes did not change due to compression
 //     Q_Balance();  
 
-     
+    StorePreviousCard(); 
     ShowNewCard ();
   }
   
@@ -1009,7 +1039,7 @@ function SwypeRight ()
   {
     //alert("Swype RIGHT  -->");
     
-    //  ShowPrevCard ();
+      ShowPrevCard ();
   }  
 // ****************************************************************************
 // ****************************************************************************
@@ -1033,9 +1063,9 @@ function showwindowsize()
       
            alert ("Device=" + devicetype + "  // width=" + pw + "  --  height=" + ph)
          }
-function showqueuestuff()
+function showqueuestuff(inMsg)
          {
-           var showstuff = 'Contents ===== \n';
+           var showstuff = 'Contents (' + inMsg + ') ===== \n';
            var i, k;
            for (k=3; k<4; k++)
            {
@@ -1500,7 +1530,20 @@ function ButtonUp_Begin (inThis)
  {
    // var t = document.getElementById('easyhardbuttons1');
    inThis.src = "App/Buttons/Button_Begin.png";
+    var t = document.getElementById('fullpage');
 
+    g_HomePageFullHtml = t.innerHTML;
+    
+    if (g_ShowCardPageFullHtml.length == 0)
+     {
+       var showCardsHtml = GetShowCardsHtml();
+       t.innerHTML = showCardsHtml;
+       InitFlashCardPage();
+     }
+     else
+     {
+       t.innerHTML = g_ShowCardPageFullHtml;
+     }
  }
  
  
@@ -1535,6 +1578,13 @@ function ButtonUp_Home (inThis)
  {
    // var t = document.getElementById('easyhardbuttons1');
    inThis.src = "App/Buttons/Button_Home.png";
+   var t = document.getElementById('fullpage');
+
+    g_ShowCardPageFullHtml = t.innerHTML;
+    
+    t.innerHTML = g_HomePageFullHtml;
+
+     
  }
   
  // ****************************************************************************
@@ -1694,3 +1744,118 @@ function ButtonUp_ContinueStats (inThis)
    CloseStats();
  }
  
+ 
+ 
+   
+   
+// ****************************************************************************
+// ****************************************************************************
+//  Here is where whole web pages are stored
+//  The thought is to have one web page and insert different html sets into 
+//  a <div> tag
+// ****************************************************************************
+// ****************************************************************************
+
+ 
+ 
+     
+    
+function GetShowCardsHtml ()
+{  
+   var retval = '';      
+   retval = retval + '  ';
+   retval = retval + '    <table width=100% cols=2 border=0 style="height: 100%;"> ';
+   retval = retval + '     <tr height=10> ';
+   retval = retval + '        <td colspan=2> &nbsp; </td> ';
+   retval = retval + '     </tr> ';
+   retval = retval + '     <tr height=50> ';
+   retval = retval + '       <td width=50% align=left colspan=2> ';
+   retval = retval + '         <table width=100%> ';
+   retval = retval + '           <tr> ';
+   retval = retval + '             <td align=left> ';
+   retval = retval + '               <img src="App/Images/NETC_NEW_transp.png" width=50 height=50> ';
+   retval = retval + '             </td> ';
+   retval = retval + '             <td align=center> ';
+   retval = retval + '                ';
+   retval = retval + '               <div id="AppDeckName" name="AppDeckName" class="topheadertext"> ';
+   retval = retval + '                 === ';
+   retval = retval + '               </div> ';
+   retval = retval + '           ';
+   retval = retval + '             </td> ';
+   retval = retval + '        ';
+   retval = retval + '            <td align=right> ';
+   retval = retval + '              <img src="App/Images/Seal_of_RTC_Great_Lakes.png" width=auto height=50> ';
+   retval = retval + '            </td> ';
+   retval = retval + '         </tr> ';
+   retval = retval + '        </table> ';
+   retval = retval + '     <tr height=15> ';
+   retval = retval + '       <td colspan=2> <hr></td> ';
+   retval = retval + '     </tr>   '; 
+   retval = retval + '     <tr> ';
+   retval = retval + '       <td style="height:100%;width:100%;vertical-align: center;" colspan=2 align=center class=carddisplaytext> ';
+   retval = retval + '         <div id="showcard" name="showcard" style="height:100%;width:100%;vertical-align: center;" > ';
+   retval = retval + '             Card Stuff Shows Here! ';
+   retval = retval + '         </div> ';
+   retval = retval + '       </a> ';
+   retval = retval + '       </td> ';
+   retval = retval + '     </tr> ';
+   retval = retval + '     ';
+   retval = retval + '     <tr height=30> <!-- begin button --> ';
+   retval = retval + '        <td align=right> ';
+   retval = retval + '        ';
+   retval = retval + '   <div id="easyhardbuttons1" name="easyhardbuttons1" > ';
+   retval = retval + '     <!--    <a href="javascript:StoreEasyCard();">  --> ';
+   retval = retval + '          <img src="App/Buttons/Button_GotIt.png" class="Buttons" ';
+   retval = retval + '                ontouchstart="ButtonDown_Easy(this);"  ontouchend="ButtonUp_Easy(this);"  >    ';
+   retval = retval + '                 ';
+   retval = retval + '                <!-- ';
+   retval = retval + '                ontouchstart="ButtonDown_Easy(this);" onmousedown="ButtonDown_Easy(this);" ';
+   retval = retval + '                ontouchend="ButtonUp_Easy(this);" onmouseup="ButtonUp_Easy(this);" >   ';
+   retval = retval + '                --> ';
+   retval = retval + '         </a>  ';
+   retval = retval + '   </div>       ';
+   retval = retval + '        </td> ';
+   retval = retval + '        <td align=left> ';
+   retval = retval + '         ';
+   retval = retval + '   <div id="easyhardbuttons2" name="easyhardbuttons2" > ';
+   retval = retval + '     <!--    <a href="javascript:StoreHardCard();">  --> ';
+   retval = retval + '          <img src="App/Buttons/Button_Hard.png" class="Buttons" ';
+   retval = retval + '                ontouchstart="ButtonDown_Hard(this);" ontouchend="ButtonUp_Hard(this);" > ';
+   retval = retval + '          <!--      onmousedown="ButtonDown_Hard(this);"  onmouseup="ButtonUp_Hard(this);" >   --> ';
+   retval = retval + '         </a>  ';
+   retval = retval + '   </div>        ';      
+   retval = retval + '        </td> ';
+   retval = retval + '      </tr>   ';
+   retval = retval + '    </div> ';
+   retval = retval + '            ';
+   retval = retval + '      <tr height=30> <!-- bottom option buttons --> ';
+   retval = retval + '        <td align=left width=50%> ';
+   retval = retval + '        <!--  <a href="index.html">  -->';
+   retval = retval + '           <img src="App/Buttons/Button_Home.png" class="Buttons" ';
+   retval = retval + '                ontouchstart="ButtonDown_Home(this);"  ontouchend="ButtonUp_Home(this); " > ';
+   retval = retval + '         <!--       onmousedown="ButtonDown_Home(this); "  onmouseup="ButtonUp_Home(this);" >  -->   ';
+   retval = retval + '         <!-- </a> ';
+   retval = retval + '          --> ';
+   retval = retval + '   <!--      <a href="javascript:ShowHowUsed();"> --> ';
+   retval = retval + '           <img src="App/Buttons/Button_ShowUse.png" class="Buttons"   ';
+   retval = retval + '                ontouchstart="ButtonDown_ShowUse(this);"  ontouchend="ButtonUp_ShowUse(this);" > ';
+   retval = retval + '                <!-- ';
+   retval = retval + '                ontouchstart="ButtonDown_ShowUse(this);" onmousedown="ButtonDown_ShowUse(this);" ';
+   retval = retval + '                ontouchend="ButtonUp_ShowUse(this);" onmouseup="ButtonUp_ShowUse(this);" >    ';
+   retval = retval + '                --> ';
+   retval = retval + '    <!--     </a> --> ';
+   retval = retval + '        </td> ';
+   retval = retval + '        <td align=right> ';
+   retval = retval + '           <!-- <img src="App/Buttons/Button_Options.png" height=40> --> ';
+   retval = retval + '            ';
+   retval = retval + '     <!--    <a href="javascript:ShowStats();">  --> ';
+   retval = retval + '           <img src="App/Buttons/Button_Statistics.png" class="Buttons" ';
+   retval = retval + '                ontouchstart="ButtonDown_Statistics(this);" ontouchend="ButtonUp_Statistics(this);" > ';
+   retval = retval + '           <!--     onmousedown="ButtonDown_Statistics(this);"  onmouseup="ButtonUp_Statistics(this);" >   --> ';
+   retval = retval + '         </a> ';
+   retval = retval + '        </td> ';
+   retval = retval + '      </tr> ';
+   retval = retval + '    </table> ';
+      
+   return retval;   
+}  // GetShowCardsHtml 

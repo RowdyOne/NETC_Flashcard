@@ -264,7 +264,7 @@ img.MainLogo_variable
   }
 img.Buttons
   {
-    height: 30px;                   /* text area height */
+    height: 68px;        /* was 28 for iphone */           /* text area height */
     width: auto ;
   } 
 img.helpimages
