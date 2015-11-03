@@ -19,6 +19,39 @@ $.fn.onTap = function(handler){
 
 $(document).ready(function(){
 
+	function launchFullscreen(element) {
+		if(element.requestFullscreen) {
+			element.requestFullscreen();
+		} else if(element.mozRequestFullScreen) {
+			element.mozRequestFullScreen();
+		} else if(element.webkitRequestFullscreen) {
+			element.webkitRequestFullscreen();
+		} else if(element.msRequestFullscreen) {
+			element.msRequestFullscreen();
+		}
+	}
+
+	function exitFullscreen() {		
+		if(document.exitFullscreen) {
+		    document.exitFullscreen();
+		  } else if(document.mozCancelFullScreen) {
+		    document.mozCancelFullScreen();
+		  } else if(document.webkitExitFullscreen) {
+		    document.webkitExitFullscreen();
+		  }
+	}
+
+	$('body').on('click','#fullscreen:not(.isFullScreen)',function(){
+		launchFullscreen(document.documentElement);
+		$(this).addClass('isFullScreen');
+	});
+
+	$('body').on('click','#fullscreen.isFullScreen',function(){
+		exitFullscreen();
+		$(this).removeClass('isFullScreen');
+	});
+
+
 	//show info modal to begin
 	$('#infoModal').modal('show');
 
@@ -126,12 +159,17 @@ $(document).ready(function(){
 
 	//change between cards
 	function changeCard(animationDirection,card){
-		var newCard='<div class="flipper animated cardIn'+animationDirection+'" style="display:none">'+
-			'<div class="front" style="background-image:url(\'card-images/'+escape(card.image)+'\');">'+
-				'<div class="question-box">'+
-					card.question+
+		var newCard='<div class="flipper animated cardIn'+animationDirection+' fullscreen-img" style="display:none">'+
+			//'<div class="front" style="background-image:url(\'card-images/'+escape(card.image)+'\');">'+
+			'<div class="front">'+
+				'<div class="front-clip">'+
+				'	<img src="card-images/'+escape(card.image)+'\">'+
+					'<div class="question-box">'+
+						card.question+
+					'</div>'+
 				'</div>'+
 			'</div>'+
+
 			'<div class="back" style="background-image:url(\'card-images/'+escape(card.image)+'\');">'+
 				'<p class="back-question">'+card.question+'</p>'+
 				'<p>'+card.answer+'</p>'+
@@ -185,13 +223,13 @@ $(document).ready(function(){
 	}
 
 	//next button routines
-	$('#next-btn').onTap(function(){
+	$('#next-btn').click(function(){
 		toNext();
 		return false;
 	});
 
 	//previous button routines
-	$('#prev-btn').onTap(function(){
+	$('#prev-btn').click(function(){
 		toPrev();
 		return false;
 	});
@@ -210,7 +248,7 @@ $(document).ready(function(){
     });
 
 
-	$('#flip-container').onTap(function(){
+	$('#flip-container').click(function(){
 		$('#flip-container').toggleClass('hover');
 	});
 

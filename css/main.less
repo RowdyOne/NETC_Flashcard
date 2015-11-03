@@ -247,7 +247,7 @@ h1,h2,h3,h4{
 	    font-family: 'Marvel', 'Open Sans', arial, sans-serif;
 	    text-transform: uppercase;
 	    display: inline-block;
-	    padding: 8px 16px;
+	    padding: 6px 12px;
 	    font-size: 2em;
 	}
 }
@@ -255,6 +255,7 @@ h1,h2,h3,h4{
 .content-bar{
 	margin-top: 150px;
 }
+
 
 // ====================================
 // 				Cards
@@ -317,6 +318,7 @@ h1,h2,h3,h4{
     transition: .3s ease-out all;
     text-align: center;
     line-height: 80px;
+    z-index: 10;
 
     &:active{
 		background-color: rgba(0,0,0,.8);
@@ -383,7 +385,7 @@ h1,h2,h3,h4{
 	#typeSelect{
 		width: auto;
 		display: inline-block;
-		bottom: 5px;
+		bottom: -3px;
 		position: relative;
 		margin-right: 18px;
 	}
@@ -458,3 +460,183 @@ h1,h2,h3,h4{
     margin: 0 auto;
 }
 
+
+.top-bar {
+	.nav a {
+		display: block;
+	}
+}
+
+.navbar-toggle {
+	margin-top: 3px;
+}
+
+.nav .navbar-nav {
+	li a {
+		color: #fff;
+		&:hover, &:focus {
+			color: #fff;
+		}
+	}
+}
+
+.navbar-default {
+	.navbar-collapse, .navbar-form {
+	    border: none;
+	    box-shadow: none;
+	}
+	.navbar-collapse {
+	    padding-left: 5px;
+	}
+}
+
+.text-container {
+	margin-top: 450px;
+}
+
+
+
+
+.flip-container {
+	height: auto;
+    margin: auto;
+    width: auto;
+    max-width: 700px;
+    min-width: 100%;
+
+	.front {
+	    height: 420px;
+	    margin: auto;
+	    width: auto;
+	    max-width: 700px;
+	    min-width: 100%;
+	}
+
+	.back {
+	    margin: auto;
+	    height: 420px;
+	    width: auto;
+	    max-width: 700px;
+	    min-width: 100%;
+	}
+
+	&.hover {
+		.flipper {
+			transform: rotateX(180deg);
+    		transform-origin: 100% 210px 0;
+		}
+	}
+
+	.fullscreen-img {
+		.front-clip {
+				height: 420px;
+				width: auto;
+			img {
+				height: 100%;
+			    margin: auto;
+			    width: 100%;
+			    max-width: 700px;
+			    min-width: 100%;
+			    object-fit: cover;
+			    -o-object-fit: cover;
+			    position: absolute;
+			}
+		}
+	}
+}
+
+
+
+@media only screen and (max-width : 480px) {
+	.modal-content {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+	}
+
+	.modal {
+		.modal-dialog {
+			margin: 0;
+			height: 100%;
+		}
+	}
+}
+
+@media only screen and (max-width : 768px) {
+ 	.top-bar {
+ 		padding-top: 35px;
+ 	}
+
+	.navbar-collapse {
+		width: 100%;
+	}
+}
+
+
+
+@media only screen and (min-width : 320px) and (max-width : 480px) {
+	.top-bar {
+		padding-top: 25px;
+	    min-height: 90px;
+	}
+
+	.flip-container {
+		.back {
+			padding-top: 50px;
+			height: 320px;
+
+			p {
+				font-size: 1.2em;
+			}
+		}
+	}
+
+	.btn-navigation {
+		top: 35%;
+		width: 55px;
+	}
+
+	.text-container {
+		margin-top: 360px;
+	}
+
+	.front, .front-clip {
+		height: 320px !important;
+	}
+
+	#typeSelect {
+		width: 220px !important;
+		white-space: normal;
+		word-wrap: break-word;
+		overflow: visible;
+	}
+
+	.flipper {
+		&.back::after,
+		& > div {
+		    height: 320px;
+		}
+	}
+
+	.flip-container.hover .flipper {
+	    transform: rotateX(180deg);
+	    transform-origin: 100% 160px 0;
+	}
+}
+
+
+@media only screen and (min-width : 992px) {
+	.flip-container, .front, .back {
+	    min-width: auto;
+	    width: 100%;
+	}
+
+	.front-clip {
+	    width: 700px;
+	    height: 470px;
+	}
+}
+
+	
