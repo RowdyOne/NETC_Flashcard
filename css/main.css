@@ -69,10 +69,6 @@ Examples:
 .flip-container.hover .flipper {
   -webkit-transform: rotateX(180deg);
           transform: rotateX(180deg);
-  -webkit-transform-origin: 100% 225px;
-      -ms-transform-origin: 100% 225px;
-          transform-origin: 100% 225px;
-  /* half of height */
 }
 .flip-container,
 .front,
@@ -87,6 +83,10 @@ Examples:
           transition: 0.6s;
   -webkit-transform-style: preserve-3d;
           transform-style: preserve-3d;
+  -webkit-transform-origin: 100% 225px;
+      -ms-transform-origin: 100% 225px;
+          transform-origin: 100% 225px;
+  /* half of height */
   position: relative;
 }
 /* hide back of pane during swap */
@@ -481,7 +481,6 @@ h4 {
   margin: auto;
   width: auto;
   max-width: 700px;
-  min-width: 100%;
 }
 .flip-container .front {
   height: 420px;
@@ -581,12 +580,6 @@ h4 {
   }
 }
 @media only screen and (min-width: 992px) {
-  .flip-container,
-  .front,
-  .back {
-    min-width: auto;
-    width: 100%;
-  }
   .front-clip {
     width: 700px;
     height: 470px;
