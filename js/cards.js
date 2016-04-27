@@ -701,13 +701,6 @@ var sortedCards={
     "answer":"MQ-4C Triton.",
     "fun":"",
     "type":"Aircraft"
-  },
-  {
-    "image":"",
-    "question":"",
-    "answer":"",
-    "fun":"",
-    "type":""
   }
 ]
 };
