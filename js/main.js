@@ -19,6 +19,21 @@ $.fn.onTap = function(handler){
 
 $(document).ready(function(){
 
+	//zendesk if online
+	zE(function() {
+		zE.hide();
+		$('.version').append($('<a href="#" onclick="zE.activate({hideOnClose: true});" style="color:white;text-decoration:underline;margin-left:10px;">Feedback</a>'));
+	});
+
+	//disclaimer when new
+	if(!localStorage.newFlashcardUser){
+		$('#disclaimer').modal();
+		localStorage.setItem('newFlashcardUser','true');
+	}
+	else{
+		
+	}
+
 	function launchFullscreen(element) {
 		if(element.requestFullscreen) {
 			element.requestFullscreen();
@@ -53,7 +68,7 @@ $(document).ready(function(){
 
 
 	//show info modal to begin
-	$('#infoModal').modal('show');
+	//$('#infoModal').modal('show');
 
 	var currentCard,
 		deck,
