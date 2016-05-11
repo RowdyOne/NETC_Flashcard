@@ -19,6 +19,25 @@ $.fn.onTap = function(handler){
 
 $(document).ready(function(){
 
+	if($(window).width()>=768){
+		try{
+			screen.lockOrientation('landscape');
+		}
+		catch (e){
+			alert('lock orientation failed to landscape')
+			//$('body').addClass('module-'+currentModule.orientation+'Only');
+		}
+	}
+	else{
+		try{
+			screen.lockOrientation('portrait');
+		}
+		catch (e){
+			alert('lock orientation failed to portrait')
+			//$('body').addClass('module-'+currentModule.orientation+'Only');
+		}
+	}
+
 	//zendesk if online
 	zE(function() {
 		zE.hide();
