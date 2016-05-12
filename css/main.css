@@ -63,7 +63,7 @@ Examples:
   perspective: 1000;
   -webkit-perspective: 1000;
   -webkit-transition: 0.6s ease-out all;
-          transition: 0.6s ease-out all;
+  transition: 0.6s ease-out all;
 }
 /* flip the pane when hovered */
 .flip-container.hover .flipper {
@@ -80,11 +80,10 @@ Examples:
 /* flip speed goes here */
 .flipper {
   -webkit-transition: 0.6s;
-          transition: 0.6s;
+  transition: 0.6s;
   -webkit-transform-style: preserve-3d;
           transform-style: preserve-3d;
   -webkit-transform-origin: 100% 225px;
-      -ms-transform-origin: 100% 225px;
           transform-origin: 100% 225px;
   /* half of height */
   position: relative;
@@ -243,7 +242,7 @@ h4 {
   position: relative;
   top: -5px;
   -webkit-transition: 0.3s ease-out all;
-          transition: 0.3s ease-out all;
+  transition: 0.3s ease-out all;
   background-color: #E7D184;
   border: 0;
   color: #45390d;
@@ -339,7 +338,7 @@ h4 {
   height: 80px;
   background-color: rgba(0, 0, 0, 0.3);
   -webkit-transition: 0.3s ease-out all;
-          transition: 0.3s ease-out all;
+  transition: 0.3s ease-out all;
   text-align: center;
   line-height: 80px;
   z-index: 10;
@@ -363,7 +362,7 @@ h4 {
   position: relative;
   top: -5px;
   -webkit-transition: 0.3s ease-out all;
-          transition: 0.3s ease-out all;
+  transition: 0.3s ease-out all;
   background-color: #3276B1;
   border: 0;
   color: white;
@@ -378,7 +377,7 @@ h4 {
   position: relative;
   top: -5px;
   -webkit-transition: 0.3s ease-out all;
-          transition: 0.3s ease-out all;
+  transition: 0.3s ease-out all;
   background-color: #E7D184;
   border: 0;
   color: #45390d;
@@ -421,6 +420,16 @@ h4 {
 }
 .modal .modal-content {
   border-radius: 0;
+}
+#disclaimer .modal-content {
+  background-color: transparent;
+  color: white;
+}
+#disclaimer .modal-header {
+  display: none;
+}
+.modal-backdrop.in {
+  opacity: 1;
 }
 #infoModal .modal-content {
   background-color: #123C72;
@@ -500,7 +509,6 @@ h4 {
   -webkit-transform: rotateX(180deg);
           transform: rotateX(180deg);
   -webkit-transform-origin: 100% 210px 0;
-      -ms-transform-origin: 100% 210px 0;
           transform-origin: 100% 210px 0;
 }
 .flip-container .fullscreen-img .front-clip {
@@ -575,7 +583,6 @@ h4 {
     -webkit-transform: rotateX(180deg);
             transform: rotateX(180deg);
     -webkit-transform-origin: 100% 160px 0;
-        -ms-transform-origin: 100% 160px 0;
             transform-origin: 100% 160px 0;
   }
 }
