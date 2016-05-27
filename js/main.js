@@ -17,24 +17,19 @@ $.fn.onTap = function(handler){
 	return this;
 }
 
-$(document).ready(function(){
-
+document.addEventListener("deviceready", onDeviceReady, false);
+function onDeviceReady()
+{
 	if($(window).width()>=768){
-		try{
-			screen.lockOrientation('landscape');
-		}
-		catch (e){
-			//$('body').addClass('module-'+currentModule.orientation+'Only');
-		}
+		screen.lockOrientation('landscape');
 	}
 	else{
-		try{
-			screen.lockOrientation('portrait');
-		}
-		catch (e){
-			//$('body').addClass('module-'+currentModule.orientation+'Only');
-		}
+		screen.lockOrientation('portrait');
 	}
+}
+
+
+$(document).ready(function(){
 
 	//zendesk if online
 	zE(function() {
