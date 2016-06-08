@@ -38,13 +38,18 @@ $(document).ready(function(){
 	});
 
 	//disclaimer when new
-	if(!localStorage.newFlashcardUser){
-		$('#disclaimer').modal();
-		localStorage.setItem('newFlashcardUser','true');
+	if(localStorage.newFlashcardUser){
+		$('#helpModal').modal();
 	}
 	else{
-		
+		$('#disclaimer').modal();
+		$('#disclaimer').on('hidden.bs.modal',function(){
+			$('#helpModal').modal();
+		});
+		localStorage.setItem('newFlashcardUser','true');
 	}
+
+
 
 	function launchFullscreen(element) {
 		if(element.requestFullscreen) {
