@@ -157,7 +157,7 @@ var sortedCards={
     "type":"Ships"
   },
   {
-    "image":"Mine Warfare Weapons.jpg",
+    "image":"Mine Warfare Ship Mission.jpg",
     "question":"What type of grenade launcher is used on Mine Warfare ships?",
     "answer":"Mark 19 (MK-19) grenade launchers.",
     "fun":"",
@@ -404,7 +404,7 @@ var sortedCards={
   {
     "image":"MH-53 Sea Dragon.jpg",
     "question":"The MH-53 Sea Dragon provides  [ ______ ] support.",
-    "answer":"Assault.",
+    "answer":"Minesweeping.",
     "fun":"",
     "type":"Aircraft"
   },
@@ -451,7 +451,7 @@ var sortedCards={
     "type":"Ships"
   },
   {
-    "image":"FA 18.jpg",
+    "image":"ciws.jpg",
     "question":"What does CIWS stand for in Phalanx CIWS?",
     "answer":"Close in Weapons System (CIWS).",
     "fun":"",
@@ -487,15 +487,15 @@ var sortedCards={
   },
   {
     "image":"USS Gravely DDG-107.jpg",
-    "question":"At the start of the 21st century, what three countries operate the heavier class Destroyer?",
+    "question":"At the start of the 21st century, what three countries operated the heavier class Destroyer?",
     "answer":"United States, Russia and Peru.",
     "fun":"",
     "type":"Ships"
   },
   {
     "image":"USS Constitution.jpg",
-    "question":"By the end of 2015, what Force will the remaining Frigates be part of? ",
-    "answer":"Active Reserve.",
+    "question":"As of 2016, what is the only commissioned Frigate left in the US Navy? ",
+    "answer":"USS Constitution.",
     "fun":"",
     "type":"Ships"
   },
@@ -563,7 +563,7 @@ var sortedCards={
     "type":"Submarine"
   },
   {
-    "image":"USS Blueback SS-581.jpg",
+    "image":"balao.jpg",
     "question":"Which war did submarines see their greatest success?",
     "answer":"World War II.",
     "fun":"",
@@ -592,7 +592,7 @@ var sortedCards={
   },
   {
     "image":"USS Seawolf SSN-21.jpg",
-    "question":"Which class of submarine is the Seawolf replacing?",
+    "question":"Which class of submarine was the Seawolf designed to replace?",
     "answer":"Los Angeles class.",
     "fun":"",
     "type":"Submarine"
@@ -621,7 +621,7 @@ var sortedCards={
   {
     "image":"Rigid Inflatable Boat.jpg",
     "question":"True or False, The Harbor Class USV is capable of speeds not to exceed 35 knots.",
-    "answer":"FALSE.  The X-class UAV can exceed 35 knots.",
+    "answer":"FALSE.  Can exceed 35 knots.",
     "fun":"",
     "type":"Unmanned Surface Vessels"
   },
@@ -661,7 +661,7 @@ var sortedCards={
     "type":"Aircraft"
   },
   {
-    "image":"P-3 Orion.jpg",
+    "image":"P-8 Poseidon.jpg",
     "question":"What is the primary mission of the P-8 Poseidon? ",
     "answer":"Submarine Patrol.",
     "fun":"",
@@ -689,7 +689,7 @@ var sortedCards={
     "type":"Aircraft"
   },
   {
-    "image":"AGM-119 missile.jpg",
+    "image":"h60.jpg",
     "question":"What weapons can the H-60 carry? ",
     "answer":"Hellfire missiles, Rockets, AGM-119 Anti-ship missiles.",
     "fun":"",
