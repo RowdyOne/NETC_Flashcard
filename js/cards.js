@@ -395,7 +395,7 @@ var sortedCards={
     "type":"Aircraft"
   },
   {
-    "image":"AGM-119 missile.jpg",
+    "image":"h60.jpg",
     "question":"What type of machine gun does the H-60 carrry? ",
     "answer":"GAU-21 .50 cal.",
     "fun":"",
