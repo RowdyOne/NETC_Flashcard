@@ -21,10 +21,10 @@ document.addEventListener("deviceready", onDeviceReady, false);
 function onDeviceReady()
 {
 	if($(window).width()>=768){
-		screen.lockOrientation('landscape');
+		screen.orientation.lock('landscape');
 	}
 	else{
-		screen.lockOrientation('portrait');
+		screen.orientation.lock('portrait');
 	}
 }
 
